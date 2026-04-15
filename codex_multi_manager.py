@@ -660,6 +660,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("run", help="Run Codex CLI under a profile")
     p.add_argument("profile")
+    p.add_argument(
+        "--yolo",
+        action="store_true",
+        help="Shortcut for Codex dangerous no-approval mode (--dangerously-bypass-approvals-and-sandbox)",
+    )
     p.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to codex. Prefix with -- if needed.")
 
     p = sub.add_parser("resume", help="Run 'codex resume' under a profile")
@@ -839,8 +844,17 @@ def main(argv: list[str] | None = None) -> int:
 
         if args.command == "run":
             run_args = args.args
+            yolo = args.yolo
+            if run_args:
+                sentinel = run_args.index("--") if "--" in run_args else len(run_args)
+                prefix = [arg for arg in run_args[:sentinel] if arg != "--yolo"]
+                if len(prefix) != len(run_args[:sentinel]):
+                    yolo = True
+                run_args = [*prefix, *run_args[sentinel:]]
             if run_args and run_args[0] == "--":
                 run_args = run_args[1:]
+            if yolo:
+                run_args = ["--dangerously-bypass-approvals-and-sandbox", *run_args]
             return codex_exec(args.profile, run_args)
 
         if args.command == "resume":

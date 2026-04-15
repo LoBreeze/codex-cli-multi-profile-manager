@@ -94,6 +94,9 @@ codex-multi login test
 codex-multi run test -- -C ~/repo
 # Start Codex CLI in ~/repo under the test profile.
 
+codex-multi run test --yolo -- exec "fix the failing test"
+# Run Codex with approvals and sandbox bypassed, equivalent to Codex yolo mode.
+
 codex-multi resume test --last
 # Resume the latest session for test.
 

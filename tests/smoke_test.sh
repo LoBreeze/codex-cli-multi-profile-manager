@@ -62,6 +62,12 @@ codex-balance test --json >/dev/null
 codex-prune-imports test --all --dry-run >/dev/null
 codex-current >/dev/null
 codex-diff-resources app test >/dev/null || true
+yolo_output="$(codex-multi run test --yolo -- exec "check bypass")"
+
+if [[ "$yolo_output" != *"fake-codex --dangerously-bypass-approvals-and-sandbox exec check bypass"* ]]; then
+  echo "run --yolo did not forward the dangerous bypass flag"
+  exit 1
+fi
 
 if [[ ! -f "$HOME/.codex_multi/test/auth.json" ]]; then
   echo "auth.json was not created for test profile"
